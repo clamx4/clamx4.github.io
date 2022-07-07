@@ -3,4 +3,7 @@
 
 [file](https://g.testc.cn/file)
 
-[iPhone shortcuts](/tool/iPhone-shortcut-URLs.md)
+### tools
+[iPhone shortcuts](/tool/iPhone-shortcut-URLs)
+
+[Windows remapkey](/tool/windows remapkey)
