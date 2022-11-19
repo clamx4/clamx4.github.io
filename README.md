@@ -1,7 +1,4 @@
-# readthefuckingmanual.github.io x
-[file](/file)
-
-[file](https://g.testc.cn/file)
+[file](https://clamx4.github.io/file/)
 
 ### tools
 [iPhone shortcuts](/tools/iPhone-shortcut-URLs)
