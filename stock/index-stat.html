@@ -1,0 +1,75 @@
+<html>
+  <head>
+    <title>index stat</title>
+    <script lang="javascript">
+      const url = 'https://raw.githubusercontent.com/clamx4/stockdata/main/NDX.csv';
+
+      const addTableRow = (tbody, tdList) => {
+        const tr = document.createElement('tr');
+        tdList.forEach(tdContent => {
+          const td = document.createElement('td');
+          td.innerText = typeof tdContent === 'number' ?
+            tdContent.toFixed(4) : tdContent;
+          tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+      };
+
+      (async () => {
+        const request = await fetch(url);
+        const resultText = await request.text();
+        const lines = resultText.split('\n');
+        const headers = lines[0].split(',');
+        const dailyClosePrices = lines.slice(1).map(line => {
+          const lineSplitted = line.split(',');
+          const date = lineSplitted[0];
+          const close = lineSplitted[4];
+          return [date, close];
+        });
+
+        const baseClose = dailyClosePrices[dailyClosePrices.length - 1][1];
+        for(let i = 0; i < dailyClosePrices.length; i++) {
+          const [date, close] = dailyClosePrices[i];
+          const netValue = close / baseClose;
+          const days = dailyClosePrices.length - 1 - i;
+          const years = days / 252;
+          const yearly = netValue ** (1 / years) - 1;
+          dailyClosePrices[i].push(netValue);
+          dailyClosePrices[i].push(yearly);
+        }
+        for(let i = 0; i < dailyClosePrices.length; i++) {
+          const yearly = dailyClosePrices[i][3];
+          const [one850, two850, three850] = [850, 1700, 2550].map(period => {
+            const dailyInPeriod = dailyClosePrices.slice(i, period);
+            return dailyInPeriod.filter(x => x[3] < yearly).length / period
+          });
+          dailyClosePrices[i].push(one850, two850, three850);
+        }
+        const tbody = document.querySelector('table tbody');
+        dailyClosePrices.forEach(x => {
+          addTableRow(tbody, x);
+        })
+      })();
+    </script>
+  </head>
+  <body>
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <td>Date</td>
+            <td>Close</td>
+            <td>net</td>
+            <td>yearly</td>
+            <td>10.5</td>
+            <td>7</td>
+            <td>3.5</td>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
