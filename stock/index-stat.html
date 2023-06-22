@@ -2,6 +2,18 @@
   <head>
     <title>index stat</title>
     <script lang="javascript">
+      const createElement = (parent, childTag) => {
+        const child = document.createElement(childTag);
+        parent.appendChild(child);
+        return child;
+      };
+      const getCsvText = async index => {
+        const url = `https://raw.githubusercontent.com/clamx4/stockdata/main/${index}.csv`;
+        const request = await fetch(url);
+        return await request.text();
+      };
+    </script>
+    <script lang="javascript">
       const url = 'https://raw.githubusercontent.com/clamx4/stockdata/main/NDX.csv';
 
       const addTableRow = (tbody, tdList) => {
@@ -12,13 +24,42 @@
             tdContent.toFixed(4) : tdContent;
           tr.appendChild(td);
         });
-
         tbody.appendChild(tr);
       };
 
-      (async () => {
-        const request = await fetch(url);
-        const resultText = await request.text();
+      const showTable = (index) => {
+        const tableId = `${index}-table`;
+        document.querySelectorAll('table').forEach(table => {
+          if (table.id === tableId) {
+            table.hidden = false;
+          } else {
+            table.hidden = true;
+          }
+        })
+      };
+
+      const createTable = index => {
+        const tableId = `${index}-table`;
+        const container = document.querySelector('#table-container');
+        const table = createElement(container, 'table');
+        table.id = tableId;
+        const thead = createElement(table, 'thead');
+        const tbody = createElement(table, 'tbody');
+        const trHead = createElement(thead, 'tr');
+        ['Date', 'Close', 'net', 'yearly', '10.5', '7', '3.5'].forEach(text => {
+          const td = createElement(trHead, 'td');
+          td.innerText = text;
+        });
+      };
+
+      const selectIndex = (index) => (async () => {
+        if (indexMap[index]) {
+          showTable(index);
+          return;
+        }
+        const csvTextPromise = getCsvText(index);
+        createTable(index);
+        const resultText = await csvTextPromise;
         const lines = resultText.split('\n');
         const headers = lines[0].split(',');
         const dailyClosePrices = lines.slice(1).map(line => {
@@ -46,16 +87,30 @@
           });
           dailyClosePrices[i].push(one850, two850, three850);
         }
-        const tbody = document.querySelector('table tbody');
+        const tbody = document.querySelector(`table#${index}-table tbody`);
         dailyClosePrices.forEach(x => {
           addTableRow(tbody, x);
-        })
+        });
+        indexMap[index] = dailyClosePrices;
+        showTable(index);
       })();
+    </script>
+    <script>
+      const indexMap = {};
+      window.onload = () => {
+        document.querySelector('input[name="index"]').click();
+      };
     </script>
   </head>
   <body>
     <div>
-      <table>
+      <input type="radio" id="SPX-ratio" name="index" onclick="selectIndex('SPX')" / >
+      <label for="SPX-ratio">SPX</label>
+      <input type="radio" id="NDX-ratio" name="index" onclick="selectIndex('NDX')" / >
+      <label for="NDX-ratio">NDX</label>
+    </div>
+    <div id="table-container">
+      <!-- <table id="SPX-table">
         <thead>
           <tr>
             <td>Date</td>
@@ -69,7 +124,7 @@
         </thead>
         <tbody>
         </tbody>
-      </table>
+      </table> -->
     </div>
   </body>
 </html>
