@@ -8,14 +8,12 @@
         return child;
       };
       const getCsvText = async index => {
-        const url = `https://raw.githubusercontent.com/clamx4/stockdata/main/${index}.csv`;
+        const url = `https://raw.githubusercontent.com/clamx4/stockdata/main/index/${index}.csv`;
         const request = await fetch(url);
         return await request.text();
       };
     </script>
     <script lang="javascript">
-      const url = 'https://raw.githubusercontent.com/clamx4/stockdata/main/NDX.csv';
-
       const addTableRow = (tbody, tdList) => {
         const tr = document.createElement('tr');
         tdList.forEach(tdContent => {
@@ -108,6 +106,16 @@
       <label for="SPX-ratio">SPX</label>
       <input type="radio" id="NDX-ratio" name="index" onclick="selectIndex('NDX')" / >
       <label for="NDX-ratio">NDX</label>
+      <input type="radio" id="DAX-ratio" name="index" onclick="selectIndex('DAX')" / >
+      <label for="DAX-ratio">DAX</label>
+      <input type="radio" id="CAC40-ratio" name="index" onclick="selectIndex('CAC40')" / >
+      <label for="CAC40-ratio">CAC40</label>
+      <input type="radio" id="FTSE100-ratio" name="index" onclick="selectIndex('FTSE100')" / >
+      <label for="FTSE100-ratio">FTSE100</label>
+      <input type="radio" id="HSI-ratio" name="index" onclick="selectIndex('HSI')" / >
+      <label for="HSI-ratio">HSI</label>
+      <input type="radio" id="NIKKEI-ratio" name="index" onclick="selectIndex('NIKKEI')" / >
+      <label for="NIKKEI-ratio">NIKKEI</label>
     </div>
     <div id="table-container">
       <!-- <table id="SPX-table">
