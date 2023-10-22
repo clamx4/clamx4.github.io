@@ -13,11 +13,7 @@
                 document.querySelector('#msg').innerText = 'not copied yet.';
             }
 
-            function sourceChange() {
-                const startNumberString = document.querySelector('#line-number-start').value;
-                const startNumber = parseInt(startNumberString) || 1;
-                const sourceInput = document.querySelector('#source');
-                const sourceCode = sourceInput.value;
+            function addLineNumber(sourceCode, startNumber) {
                 const array = sourceCode.split('\n');
                 const resultArray = [];
                 for( let i = 0; i < array.length; i++) {
@@ -26,29 +22,60 @@
                     const line = `${prefix}${array[i]}`;
                     resultArray.push(line);
                 }
-                const result = resultArray.join('\n');
+                return resultArray.join('\n');
+            }
+
+            function removeLineNumber(sourceCode) {
+                const array = sourceCode.split('\n');
+                const resultArray = [];
+                for( let i = 0; i < array.length; i++) {
+                    const line = array[i].replace(/^\[\d+\] /, '');
+                    resultArray.push(line);
+                }
+                return resultArray.join('\n');
+            }
+
+            function sourceChange() {
+                const startNumberString = document.querySelector('#line-number-start').value;
+                const startNumber = parseInt(startNumberString) || 1;
+                const sourceInput = document.querySelector('#source');
+                const sourceCode = sourceInput.value;
+
+                const result = isAdd() ? addLineNumber(sourceCode, startNumber)
+                    : removeLineNumber(sourceCode);
 
                 const targetInput = document.querySelector('#target');
                 targetInput.value = result;
             }
 
-            let lastTargetValue = '';
+            function isAdd() {
+                return document.querySelector('#operation-add').checked;
+            }
 
             function focusTarget() {
                 const targetInput = document.querySelector('#target');
                 const text = targetInput.value;
                 
-                if( text !== lastTargetValue ) {
-                    navigator.clipboard.writeText(text);
-    
-                    document.querySelector('#msg').innerText = 'copied to clipboard.';
-                }
+                navigator.clipboard.writeText(text);
+
+                document.querySelector('#msg').innerText = 'copied to clipboard.';
+            }
+
+            function generateAndCopy() {
+                sourceChange();
+                focusTarget();
             }
         </script>
     </head>
     <body>
         <div style="display: inline-block;">
             <div>
+                <div>
+                    <input id="operation-add" type="radio" name="operation" value="addLineNumber" checked>
+                    <label for="operation-add">add line number</label>
+                    <input id="operation-remove" type="radio" name="operation" value="removeLineNumber">
+                    <label for="operation-remove">remove line number</label>
+                </div>
                 <span>Source:</span>
                 <label for="line-number-start">Start with line</label>
                 <input id="line-number-start" type="number" value="1"
@@ -57,13 +84,16 @@
                 />
             </div>
             <textarea id="source" onfocus="focusSource()" onchange="sourceChange()"></textarea>
+            <div>
+                <button onclick="generateAndCopy()">Generate & Copy to clipboard</button>
+            </div>
         </div>
 
         <div style="display: inline-block;">
             <div>
                 <span>Targat:</span>
             </div>
-            <textarea id="target" onfocus="focusTarget()"></textarea>
+            <textarea id="target"></textarea>
         </div>
         <div>
             <span id="msg"></span>
