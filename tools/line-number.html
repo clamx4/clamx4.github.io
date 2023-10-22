@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Add line number for code</title>
+        <style>
+            textarea {
+                width: 40vw;
+                height: 75vh;
+            }
+        </style>
+        <script>
+            function focusSource() {
+                document.querySelector('#msg').innerText = 'not copied yet.';
+            }
+
+            function sourceChange() {
+                const startNumberString = document.querySelector('#line-number-start').value;
+                const startNumber = parseInt(startNumberString) || 1;
+                const sourceInput = document.querySelector('#source');
+                const sourceCode = sourceInput.value;
+                const array = sourceCode.split('\n');
+                const resultArray = [];
+                for( let i = 0; i < array.length; i++) {
+                    const lineNumber = i + startNumber;
+                    const prefix = `${lineNumber}:`.padEnd(6, ' ');
+                    const line = `${prefix}${array[i]}`;
+                    resultArray.push(line);
+                }
+                const result = resultArray.join('\n');
+
+                const targetInput = document.querySelector('#target');
+                targetInput.value = result;
+            }
+
+            let lastTargetValue = '';
+
+            function focusTarget() {
+                const targetInput = document.querySelector('#target');
+                const text = targetInput.value;
+                
+                navigator.clipboard.writeText(text);
+
+                document.querySelector('#msg').innerText = 'copied to clipboard.';
+            }
+        </script>
+    </head>
+    <body>
+        <div style="display: inline-block;">
+            <div>
+                <span>Source:</span>
+                <label for="line-number-start">Start with line</label>
+                <input id="line-number-start" type="number" value="1"
+                    onclick="this.select()"
+                    onchange="sourceChange()"
+                />
+            </div>
+            <textarea id="source" onfocus="focusSource()" onchange="sourceChange()"></textarea>
+        </div>
+
+        <div style="display: inline-block;">
+            <div>
+                <span>Targat:</span>
+            </div>
+            <textarea id="target" onfocus="focusTarget()"></textarea>
+        </div>
+        <div>
+            <span id="msg"></span>
+        </div>
+    </body>
+</html>
