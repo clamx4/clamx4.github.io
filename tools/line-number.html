@@ -22,7 +22,7 @@
                 const resultArray = [];
                 for( let i = 0; i < array.length; i++) {
                     const lineNumber = i + startNumber;
-                    const prefix = `${lineNumber}:`.padEnd(6, ' ');
+                    const prefix = `[${lineNumber}] `;
                     const line = `${prefix}${array[i]}`;
                     resultArray.push(line);
                 }
@@ -38,9 +38,11 @@
                 const targetInput = document.querySelector('#target');
                 const text = targetInput.value;
                 
-                navigator.clipboard.writeText(text);
-
-                document.querySelector('#msg').innerText = 'copied to clipboard.';
+                if( text !== lastTargetValue ) {
+                    navigator.clipboard.writeText(text);
+    
+                    document.querySelector('#msg').innerText = 'copied to clipboard.';
+                }
             }
         </script>
     </head>
