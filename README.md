@@ -1,4 +1,4 @@
-[file](https://clamx4.github.io/file/)
+[file](/file/)
 
 ### stock
 [index stat](/stock/index-stat)
