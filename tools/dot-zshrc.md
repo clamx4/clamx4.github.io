@@ -12,7 +12,6 @@ parse_git_branch() {
 }
 setopt PROMPT_SUBST
 export PROMPT='z@%1~%F{yellow}$(parse_git_branch)%f %(!.#.$) '
-```
 
 proxy() {
   if [[ "$1" != "off" ]]
@@ -25,3 +24,4 @@ proxy() {
   echo 'echo $all_proxy'
   echo $all_proxy
 }
+```
