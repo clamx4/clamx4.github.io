@@ -13,3 +13,15 @@ parse_git_branch() {
 setopt PROMPT_SUBST
 export PROMPT='z@%1~%F{yellow}$(parse_git_branch)%f %(!.#.$) '
 ```
+
+proxy() {
+  if [[ "$1" != "off" ]]
+  then
+    export all_proxy=socks5://127.0.0.1:1080
+  else
+    unset all_proxy
+  fi
+    
+  echo 'echo $all_proxy'
+  echo $all_proxy
+}
