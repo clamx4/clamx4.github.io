@@ -20,8 +20,6 @@ proxy() {
   else
     unset all_proxy
   fi
-    
-  echo 'echo $all_proxy'
-  echo $all_proxy
+  echo 'echo $all_proxy' '"'$all_proxy'"'
 }
 ```
