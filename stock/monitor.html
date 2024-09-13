@@ -1,0 +1,326 @@
+
+<!DOCTYPE html>
+<html>
+<body>
+<div id='root'></div>
+
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/javascript">
+const target = [
+  {
+    code: 'sh512580',
+    buy: 0.776,
+    sell: 1.212
+  },
+  {
+    code: 'sh513300',
+    buy: 1.362,
+    sell: 2.129
+  },
+  {
+    code: 'sh513030',
+    buy: 1.143,
+    sell: 1.786
+  },
+  {
+    code: 'sz161127',
+    buy: 1.143,
+    sell: 1.786
+  },
+  {
+    code: 'sh512980',
+    buy: 0.526,
+    sell: 0.822
+  },
+  {
+    code: 'sz159949',
+    buy: 0.618,
+    sell: 0.966
+  },
+  {
+    code: 'sz162415',
+    buy: 1.912,
+    sell: 2.987
+  },
+  {
+    code: 'sz159847',
+    buy: 0.287,
+    sell: 0.449
+  },
+  {
+    code: 'sz159920',
+    buy: 0.917,
+    sell: 1.433
+  },
+  {
+    code: 'sh513500',
+    buy: 1.623,
+    sell: 2.536
+  },
+  {
+    code: 'sz159938',
+    buy: 0.461,
+    sell: 0.720
+  },
+  {
+    code: 'sh513290',
+    buy: 1.060,
+    sell: 1.656
+  },
+  {
+    code: 'sz159939',
+    buy: 0.369,
+    sell: 0.577
+  },
+  {
+    code: 'sh513080',
+  },
+  {
+    code: 'sh513050',
+    buy: 0.826,
+    sell: 1.291
+  },
+  {
+    code: 'sz159928',
+    buy: 0.573,
+    sell: 0.895
+  },
+  {
+    code: 'sh512660',
+    buy: 0.677,
+    sell: 1.058
+  },
+];
+
+const grid = [
+  {
+    code: 'sz159920',
+    buy: 0.96,
+    sell: 1.2
+  },
+  {
+    code: 'sh515180',
+    buy: 1.18,
+    sell: null
+  },
+  {
+    code: 'sz159922',
+    buy: null,
+    sell: 5.376
+  },
+  {
+    code: 'sz159949',
+    buy: null,
+    sell: 0.806
+  },
+  {
+    code: 'sh513030',
+    buy: 1.04,
+    sell: null
+  },
+  {
+    code: 'sz159938',
+    buy: null,
+    sell: 0.78
+  },
+  {
+    code: 'sh513050',
+    buy: null,
+    sell: 1.35
+  },
+  {
+    code: 'sh513330',
+    buy: null,
+    sell: 0.410
+  },
+  {
+    code: 'sh512580',
+    buy: 0.92,
+    sell: null
+  },
+  {
+    code: 'sh512980',
+    buy: 0.512,
+    sell: 0.64
+  },
+  {
+    code: 'sz159939',
+    buy: 0.416,
+    sell: 0.52
+  },
+  {
+    code: 'sh515560',
+    buy: 0.681,
+    sell: 0.851
+  },
+  {
+    code: 'sh512400',
+    buy: 0.72,
+  },
+  {
+    code: 'sz159518',
+    buy: 0.488,
+  },
+];
+
+const blackCar = [
+  {
+    code: 'sh518880',
+    buy: 3.54,
+  },
+  {
+    code: 'sz159518',
+    buy: 0.5,
+  },
+  {
+    code: 'sz159866',
+    buy: 0.751,
+  },
+];
+
+const fetchPrice = async (stockCode, startDate, endDate) => {
+  const responseEastMoney = await fetchPriceEastMoney(stockCode, startDate, endDate);
+
+  const lastDayPricesString = responseEastMoney.data.klines.at(-1);
+  const [dateString, open, closeString, max, min] = lastDayPricesString.split(',');
+  return {
+    name: responseEastMoney.data.name,
+    decimal: responseEastMoney.data.decimal,
+    dateString,
+    close: parseFloat(closeString),
+  }
+}
+
+const fetchPriceEastMoney = async (stockCode, startDate, endDate) => {
+  const secid = stockCode.replace(/^(sh|sz)(.+)/, (s, s1, s2) => `${s1 === 'sh' ? 1 : 0}.${s2}`);
+  const begin = startDate.toISOString().substring(0, 10).replace(/-/g, '');
+  const end = endDate.toISOString().substring(0, 10).replace(/-/g, '');
+  const url = `https://push2his.eastmoney.com` +
+    `/api/qt/stock/kline/get` +
+    `?secid=${secid}` +
+    `&ut=fa5fd1943c7b386f172d6893dbfba10b` +
+    `&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6` +
+    `&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55` +
+    `&klt=101&fqt=0&` +
+    `beg=${begin}&end=20500101` +
+    `&smplmt=460&lmt=1000000&_=1726111965336`;
+  const response = await fetch(url); 
+  const responseJson = await response.json()
+  return responseJson;
+};
+</script>
+
+<script type="text/babel">
+  const { useEffect, useState } = React;
+  
+  const App = () => {
+    const [sh000001, setSh000001] = useState(null);
+    
+    useEffect(() => {
+      (async()=>{
+        const endDate = new Date();
+        const startDate = new Date(+endDate - 3600*24*1000 * 10);
+        const sh000001Price = await fetchPrice('sh000001', startDate, endDate);
+        setSh000001(sh000001Price);
+      })();
+    }, [])
+
+    if (sh000001 === null) {
+      return <div>Loading</div>;
+    }
+
+    return (
+      <div>
+        <div>Date: {sh000001.dateString}</div>
+        {Section('Target', target, sh000001)}
+        {Section('Grid', grid, sh000001)}
+        {Section('BlackCar', blackCar, sh000001)}
+      </div>
+    );
+  }
+
+
+const Section = (name, monitors, sh000001Price) => {
+  return (
+    <div>
+      <span>{name}</span>
+      <table>
+        <thead>
+          <tr>
+            <th>code</th>
+            <th>name</th>
+            <th>buy</th>
+            <th>sell</th>
+            <th>price</th>
+            <th>percentToBuy</th>
+            <th>percentToSell</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            monitors.map((stock, i) => {
+              return (
+                <TableRow
+                  key={i}
+                  stock={stock}
+                  sh000001Price={sh000001Price}
+                />
+              )
+            })
+          }
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+const TableRow = ({stock, sh000001Price}) => {
+  const [price, setPrice] = useState(0);
+  const [name, setName] = useState('');
+
+  useEffect(() => {
+    (async (stock)=> {
+      const endDate = new Date(sh000001Price.dateString);
+      const startDate = new Date(+endDate - 3600*24*1000 * 3);
+      const price = await fetchPrice(stock.code, startDate, endDate);
+      setPrice(price.close)
+      setName(price.name)
+    })(stock);
+  }, []);
+
+  const percentToBuy = (stock.buy - price) / price * 100;
+  const percentToSell = (stock.sell - price) / price * 100;
+  const buyWarn = stock.buy && percentToBuy > -1;
+  const buyTriggered = stock.buy && percentToBuy >= 0;
+  const sellWarn = stock.sell && percentToSell < 1;
+  const sellTriggered = stock.sell && percentToSell <= 0;
+  return (
+    <tr>
+      <td>{stock.code}</td>
+      <td>{name}</td>
+      <td>{stock.buy}</td>
+      <td>{stock.sell}</td>
+      <td>{price}</td>
+      <td style={{
+        textAlign: 'right',
+        ...(buyTriggered ? {backgroundColor: '#7f7'} : buyWarn && { backgroundColor: '#ff7' }),
+      }}>{stock.buy && `${percentToBuy.toFixed(1)}%`}</td>
+      <td style={{
+        textAlign: 'right',
+        ...(sellTriggered ? {backgroundColor: '#7f7'} : sellWarn && { backgroundColor: '#ff7' }),
+      }}>{stock.sell && `${percentToSell.toFixed(1)}%`}</td>
+    </tr>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <App />
+);
+
+</script>
+</body>
+</html>
