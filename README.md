@@ -3,6 +3,8 @@
 ### stock
 [index stat](/stock/index-stat)
 
+[monitor](/stock/monitor)
+
 ### tools
 [iPhone shortcuts](/tools/iPhone-shortcut-URLs)
 
