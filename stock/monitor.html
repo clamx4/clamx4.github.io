@@ -211,6 +211,14 @@ const fetchPriceEastMoney = async (stockCode, startDate, endDate) => {
   const responseJson = await response.json()
   return responseJson;
 };
+
+  const fetchSinaFinance = async (stockCode, startDate, endDate) => {
+    'https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=sh510300&scale=240&ma=5&datalen=2';
+    'https://hq.sinajs.cn/list=sh600519';// Referer: https://finance.sina.com.cn/
+  };
+  const fetchSinaFuture = async (code, startDate, endDate) => {
+    'https://stock2.finance.sina.com.cn/futures/api/json.php/CffexFuturesService.getCffexFuturesDailyKLine?symbol=IC2406';
+  };
 </script>
 
 <script type="text/babel">
