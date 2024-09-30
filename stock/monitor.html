@@ -300,9 +300,9 @@ const TableRow = ({stock, sh000001Price}) => {
 
   const percentToBuy = (stock.buy - price) / price * 100;
   const percentToSell = (stock.sell - price) / price * 100;
-  const buyWarn = stock.buy && percentToBuy > -1;
+  const buyWarn = stock.buy && percentToBuy > -2;
   const buyTriggered = stock.buy && percentToBuy >= 0;
-  const sellWarn = stock.sell && percentToSell < 1;
+  const sellWarn = stock.sell && percentToSell < 2;
   const sellTriggered = stock.sell && percentToSell <= 0;
   return (
     <tr>
