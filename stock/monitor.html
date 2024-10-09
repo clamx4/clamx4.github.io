@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <body>
@@ -181,8 +180,14 @@ const blackCar = [
   },
 ];
 
+const stockCodeToPricePromise = {};
+
 const fetchPrice = async (stockCode, startDate, endDate) => {
-  const responseEastMoney = await fetchPriceEastMoney(stockCode, startDate, endDate);
+  if (stockCodeToPricePromise[stockCode] === undefined) {
+    stockCodeToPricePromise[stockCode] = fetchPriceEastMoney(stockCode, startDate, endDate);
+  }
+  const pricePromise = stockCodeToPricePromise[stockCode];
+  const responseEastMoney = await pricePromise;
 
   const lastDayPricesString = responseEastMoney.data.klines.at(-1);
   const [dateString, open, closeString, max, min] = lastDayPricesString.split(',');
@@ -192,7 +197,7 @@ const fetchPrice = async (stockCode, startDate, endDate) => {
     dateString,
     close: parseFloat(closeString),
   }
-}
+};
 
 const fetchPriceEastMoney = async (stockCode, startDate, endDate) => {
   const secid = stockCode.replace(/^(sh|sz)(.+)/, (s, s1, s2) => `${s1 === 'sh' ? 1 : 0}.${s2}`);
