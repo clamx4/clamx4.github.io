@@ -8,185 +8,301 @@
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <script type="text/javascript">
+const Exchange = {
+  NYSE: 107,
+  NASDAQ: 105,
+  SH: 1,
+  SZ: 0,
+};
+
 const target = [
   {
-    code: 'sh512580',
+    exchange: Exchange.SH,
+    code: '512580',
     buy: 0.787,
     sell: 1.230
   },
   {
-    code: 'sh513300',
+    exchange: Exchange.SH,
+    code: '513300',
     buy: 1.433,
     sell: 2.238
   },
   {
-    code: 'sh513030',
+    exchange: Exchange.SH,
+    code: '513030',
     buy: 1.156,
     sell: 1.807
   },
   {
-    code: 'sz161127',
+    exchange: Exchange.SZ,
+    code: '161127',
     buy: 1.126,
     sell: 1.759
   },
   {
-    code: 'sh512980',
+    exchange: Exchange.SH,
+    code: '512980',
     buy: 0.526,
     sell: 0.822
   },
   {
-    code: 'sz159949',
+    exchange: Exchange.SZ,
+    code: '159949',
     buy: 0.791,
     sell: 1.235
   },
   {
-    code: 'sz162415',
+    exchange: Exchange.SZ,
+    code: '162415',
     buy: 1.912,
     sell: 2.987
   },
   {
-    code: 'sz159847',
+    exchange: Exchange.SZ,
+    code: '159847',
     buy: 0.359,
     sell: 0.561
   },
   {
-    code: 'sz159920',
+    exchange: Exchange.SZ,
+    code: '159920',
     buy: 0.917,
     sell: 1.433
   },
   {
-    code: 'sh513500',
+    exchange: Exchange.SH,
+    code: '513500',
     buy: 1.623,
     sell: 2.536
   },
   {
-    code: 'sz159938',
+    exchange: Exchange.SZ,
+    code: '159938',
     buy: 0.461,
     sell: 0.720
   },
   {
-    code: 'sh513290',
+    exchange: Exchange.SH,
+    code: '513290',
     buy: 1.060,
     sell: 1.656
   },
   {
-    code: 'sz159939',
+    exchange: Exchange.SZ,
+    code: '159939',
     buy: 0.505,
     sell: 0.789
   },
   {
-    code: 'sh513080',
+    exchange: Exchange.SH,
+    code: '513080',
   },
   {
-    code: 'sh513050',
+    exchange: Exchange.SH,
+    code: '513050',
     buy: 1.053,
     sell: 1.646
   },
   {
-    code: 'sz159928',
+    exchange: Exchange.SZ,
+    code: '159928',
     buy: 0.737,
     sell: 1.151
   },
   {
-    code: 'sh512660',
-    buy: 0.846,
-    sell: 1.323
+    exchange: Exchange.SH,
+    code: '512660',
+    buy: 0.677,
+    sell: 1.058
   },
 ];
 
 const grid = [
   {
-    code: 'sz159920',
+    exchange: Exchange.SZ,
+    code: '159920',
     buy: 1.2,
     sell: 1.35
   },
   {
-    code: 'sh515180',
+    exchange: Exchange.SH,
+    code: '515180',
     buy: 1.18,
     sell: null
   },
   {
-    code: 'sz159922',
+    exchange: Exchange.SZ,
+    code: '159922',
     buy: 5.376,
     sell: 6.4
   },
   {
-    code: 'sz159949',
+    exchange: Exchange.SZ,
+    code: '159949',
     buy: 0.89,
     sell: 1.06
   },
   {
-    code: 'sh513030',
+    exchange: Exchange.SH,
+    code: '513030',
     buy: 1.04,
     sell: null
   },
   {
-    code: 'sz159938',
+    exchange: Exchange.SZ,
+    code: '159938',
     buy: null,
     sell: 0.78
   },
   {
-    code: 'sh513050',
+    exchange: Exchange.SH,
+    code: '513050',
     buy: null,
     sell: 1.35
   },
   {
-    code: 'sh513330',
+    exchange: Exchange.SH,
+    code: '513330',
     buy: 0.410,
     sell: 0.492
   },
   {
-    code: 'sh512580',
+    exchange: Exchange.SH,
+    code: '512580',
     buy: 0.92,
     sell: null
   },
   {
-    code: 'sh512980',
+    exchange: Exchange.SH,
+    code: '512980',
     buy: 0.64,
     sell: 0.8
   },
   {
-    code: 'sz159939',
+    exchange: Exchange.SZ,
+    code: '159939',
     buy: 0.52,
     sell: 0.65
   },
   {
-    code: 'sh515560',
+    exchange: Exchange.SH,
+    code: '515560',
     buy: 0.958,
     sell: 1.224
   },
   {
-    code: 'sh512400',
+    exchange: Exchange.SH,
+    code: '512400',
     buy: 0.72,
   },
   {
-    code: 'sz159518',
+    exchange: Exchange.SZ,
+    code: '159518',
     buy: 0.488,
   },
 ];
 
 const blackCar = [
   {
-    code: 'sh518880',
+    exchange: Exchange.SH,
+    code: '518880',
     buy: 3.54,
   },
   {
-    code: 'sz159518',
+    exchange: Exchange.SZ,
+    code: '159518',
     buy: 0.5,
   },
   {
-    code: 'sz159866',
+    exchange: Exchange.SZ,
+    code: '159866',
     buy: 0.751,
   },
 ];
 
-const stockCodeToPricePromise = {};
+const rebalance = [
+  {
+    exchange: Exchange.NYSE,
+    code: 'SPLG',
+    price: 67.24,
+    percentage: 15
+  },
+  {
+    exchange: Exchange.NASDAQ,
+    code: 'QQQM',
+    price: 200.35,
+    percentage: 15
+  },
+  {
+    exchange: Exchange.NYSE,
+    code: 'VYM',
+    price: 127.71,
+    percentage: 10
+  },
+  {
+    exchange: Exchange.NYSE,
+    code: 'ASHR',
+    price: 28.68,
+    percentage: 7
+  },
+  {
+    exchange: Exchange.NASDAQ,
+    code: 'MCHI',
+    price: 51.32,
+    percentage: 7
+  },
+  {
+    exchange: Exchange.NYSE,
+    code: 'EEM',
+    price: 46.00,
+    percentage: 6
+  },
+  {
+    exchange: Exchange.NYSE,
+    code: 'EWG',
+    price: 33.82,
+    percentage: 5
+  },
+  {
+    exchange: Exchange.NYSE,
+    code: 'EWQ',
+    price: 40.43,
+    percentage: 5
+  },
+  {
+    exchange: Exchange.NYSE,
+    code: 'EWU',
+    price: 37.4,
+    percentage: 5
+  },
+  {
+    exchange: Exchange.NYSE,
+    code: 'EWJ',
+    price: 71.56,
+    percentage: 5
+  },
+  {
+    exchange: Exchange.NYSE,
+    code: 'GLDM',
+    price: 52.27,
+    percentage: 15
+  },
+  {
+    exchange: Exchange.NYSE,
+    code: 'XOP',
+    price: 131.39,
+    percentage: 5
+  },
+];
 
-const fetchPrice = async (stockCode, startDate, endDate) => {
-  if (stockCodeToPricePromise[stockCode] === undefined) {
-    stockCodeToPricePromise[stockCode] = fetchPriceEastMoney(stockCode, startDate, endDate);
+const codeToPricePromise = {};
+
+const fetchPrice = async (stockCode, exchange, startDate, endDate) => {
+  if (codeToPricePromise[stockCode] === undefined) {
+    codeToPricePromise[stockCode] = fetchPriceEastMoney(stockCode, exchange, startDate, endDate);
   }
-  const pricePromise = stockCodeToPricePromise[stockCode];
+  const pricePromise = codeToPricePromise[stockCode];
   const responseEastMoney = await pricePromise;
 
   const lastDayPricesString = responseEastMoney.data.klines.at(-1);
@@ -199,8 +315,8 @@ const fetchPrice = async (stockCode, startDate, endDate) => {
   }
 };
 
-const fetchPriceEastMoney = async (stockCode, startDate, endDate) => {
-  const secid = stockCode.replace(/^(sh|sz)(.+)/, (s, s1, s2) => `${s1 === 'sh' ? 1 : 0}.${s2}`);
+const fetchPriceEastMoney = async (stockCode, exchange, startDate, endDate) => {
+  const secid = `${exchange}.${stockCode}`;
   const begin = startDate.toISOString().substring(0, 10).replace(/-/g, '');
   const end = endDate.toISOString().substring(0, 10).replace(/-/g, '');
   const url = `https://push2his.eastmoney.com` +
@@ -235,7 +351,7 @@ const fetchPriceEastMoney = async (stockCode, startDate, endDate) => {
       (async()=>{
         const endDate = new Date();
         const startDate = new Date(+endDate - 3600*24*1000 * 10);
-        const sh000001Price = await fetchPrice('sh000001', startDate, endDate);
+        const sh000001Price = await fetchPrice('000001', Exchange.SH, startDate, endDate);
         setSh000001(sh000001Price);
       })();
     }, [])
@@ -250,6 +366,7 @@ const fetchPriceEastMoney = async (stockCode, startDate, endDate) => {
         {Section('Target', target, sh000001)}
         {Section('Grid', grid, sh000001)}
         {Section('BlackCar', blackCar, sh000001)}
+        <RebalanceTable rebalanceArray={rebalance}/>
       </div>
     );
   }
@@ -297,7 +414,7 @@ const TableRow = ({stock, sh000001Price}) => {
     (async (stock)=> {
       const endDate = new Date(sh000001Price.dateString);
       const startDate = new Date(+endDate - 3600*24*1000 * 3);
-      const price = await fetchPrice(stock.code, startDate, endDate);
+      const price = await fetchPrice(stock.code, stock.exchange, startDate, endDate);
       setPrice(price.close)
       setName(price.name)
     })(stock);
@@ -327,6 +444,93 @@ const TableRow = ({stock, sh000001Price}) => {
     </tr>
   );
 }
+
+const RebalanceTable = ({rebalanceArray}) => {
+  const [hidden, setHidden] = useState(true);
+  const [codeToPrice, setCodeToPrice] = useState({});
+
+  useEffect(() => {
+    if (hidden) {
+      return;
+    }
+    for (const stock of rebalanceArray) {
+      (async (stock)=> {
+        const endDate = new Date();
+        const startDate = new Date(+endDate - 3600*24*1000 * 5);
+        const price = await fetchPrice(stock.code, stock.exchange, startDate, endDate);
+        setCodeToPrice((old) => ({
+          ...old,
+          [stock.code]: price
+        }));
+      })(stock);
+    }
+  }, [hidden]);
+
+  if (hidden) {
+    const showRebalanceTable = () => {
+      setHidden(false);
+      setTimeout(() => window.scrollTo(0, document.body.scrollHeight), 100);
+    };
+    return (
+      <>
+        <span>Rebalance</span>
+        <button onClick={showRebalanceTable}>show</button>
+      </>
+    );
+  }
+
+  const netValue = rebalanceArray.map(rebalanceItem => {
+    const quantity = rebalanceItem.percentage / rebalanceItem.price;
+    const itemValue = codeToPrice[rebalanceItem.code]?.close * quantity;
+    return itemValue;
+  }).reduce((a, b) => a + b);
+
+  return (
+    <div>
+      <span>Rebalance</span>
+      <table>
+        <thead>
+          <tr>
+            <th>code</th>
+            <th>name</th>
+            <th>lastPrice</th>
+            <th>price</th>
+            <th>percentage</th>
+            <th>proportion</th>
+            <th>deviation (-25%/+33%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rebalanceArray.map((rebalanceItem, index) => {
+            const closePrice = codeToPrice[rebalanceItem.code]?.close;
+            const quantity = rebalanceItem.percentage / rebalanceItem.price;
+            const proportion = closePrice * quantity / netValue;
+            const deviation = proportion / (rebalanceItem.percentage / 100) - 1;
+            const rebalanceTriggered = deviation > 0.33 || deviation < -0.25;
+            const rebalanceWarn = deviation > 0.25 || deviation < -0.2;
+            return (
+              <tr key={index}>
+                <td>{rebalanceItem.code}</td>
+                <td>{codeToPrice[rebalanceItem.code]?.name}</td>
+                <td>{rebalanceItem.price}</td>
+                <td>{closePrice}</td>
+                <td>{rebalanceItem.percentage}</td>
+                <td>{(proportion*100).toFixed(2)}</td>
+                <td style={{
+                  textAlign: 'right',
+                  ...(
+                    rebalanceTriggered
+                    ? {backgroundColor: '#7f7'}
+                    : rebalanceWarn && { backgroundColor: '#ff7' }),
+                }}>{(deviation*100).toFixed(1)}%</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>  
+    </div>
+  )
+};
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
