@@ -7,6 +7,14 @@ alias ls='ls -G'
 
 autoload -Uz compinit && compinit
 
+function git() {
+  if [ "$1" = "stash" ] && [ "$2" = "drop" ];then
+    echo ERROR: '`git stash drop`' is not allowed
+    return 1
+  fi
+  command git $@
+}
+
 parse_git_branch() {
   git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/^\* \(.*\)/(\1)/'
 }
