@@ -80,10 +80,12 @@
         for(let i = 0; i < dailyClosePrices.length; i++) {
           const yearly = dailyClosePrices[i][3];
           const [one850, two850, three850] = [850, 1700, 2550].map(period => {
-            const dailyInPeriod = dailyClosePrices.slice(i, period);
-            return dailyInPeriod.filter(x => x[3] < yearly).length / period
+            const dailyInPeriod = dailyClosePrices.slice(i, i + period);
+            return dailyInPeriod.length >= period
+              ? dailyInPeriod.filter(x => x[3] < yearly).length / period
+              : null;
           });
-          dailyClosePrices[i].push(one850, two850, three850);
+          dailyClosePrices[i].push(three850, two850, one850);
         }
         const tbody = document.querySelector(`table#${index}-table tbody`);
         dailyClosePrices.forEach(x => {
