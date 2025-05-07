@@ -440,8 +440,12 @@ const TableRow = ({stock, sh000001Price}) => {
     <tr>
       <td>{stock.code}</td>
       <td>{name}</td>
-      <td>{stock.buy}</td>
-      <td>{stock.sell}</td>
+      <td style={{
+        ...(buyTriggered ? {backgroundColor: '#7f7'} : buyWarn && { backgroundColor: '#ff7' }),
+      }}>{stock.buy}</td>
+      <td style={{
+        ...(sellTriggered ? {backgroundColor: '#7f7'} : sellWarn && { backgroundColor: '#ff7' }),
+      }}>{stock.sell}</td>
       <td>{price}</td>
       <td style={{
         textAlign: 'right',
