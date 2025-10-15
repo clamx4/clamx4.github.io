@@ -47,12 +47,12 @@ async function fetchAndPrintResult() {
     }
   }
   
-  console.log('uncoveredLines');
+  console.log('uncoveredLines, count:', uncoveredLines.length);
   for (const x of uncoveredLines) {
     console.log(`line: ${x.line}, lintHits: ${x.lineHits}`);
   }
   
-  console.log('conditional uncoveredLines');
+  console.log('conditional uncoveredLines, count:', unconveredLinesConditional.length);
   for (const x of unconveredLinesConditional) {
     console.log(`line: ${x.line}, covered/Conditions: ${x.coveredConditions}/${x.conditions}`);
   }
