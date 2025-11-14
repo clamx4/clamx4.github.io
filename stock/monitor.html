@@ -15,6 +15,8 @@ const Exchange = {
   SH: 1,
   SZ: 0,
   HK: 116,
+  CFFEX_DELAY: 220,
+  GFEX: 225,
 };
 
 const target = [
@@ -260,6 +262,18 @@ const blackCar = [
     exchange: Exchange.NYSE_SAP,
     code: 'SAP',
     sell: 311,
+  },
+  {
+    exchange: Exchange.CFFEX_DELAY,
+    code: 'TLM',
+    buy: 114,
+    sell: 118,
+  },
+  {
+    exchange: Exchange.GFEX,
+    code: 'psm',
+    buy: 45000,
+    sell: 55000,
   },
 ];
 
