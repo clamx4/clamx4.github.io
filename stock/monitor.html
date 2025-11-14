@@ -300,7 +300,8 @@ const codeToPricePromise = {};
 
 const fetchPrice = async (stockCode, exchange, startDate, endDate) => {
   if (codeToPricePromise[stockCode] === undefined) {
-    codeToPricePromise[stockCode] = fetchPriceEastMoney(stockCode, exchange, startDate, endDate);
+    // codeToPricePromise[stockCode] = fetchPriceEastMoney(stockCode, exchange, startDate, endDate);
+    codeToPricePromise[stockCode] = fetchPriceEastMoneyCritical(stockCode, exchange, startDate, endDate);
   }
   const pricePromise = codeToPricePromise[stockCode];
   const responseEastMoney = await pricePromise;
@@ -331,6 +332,47 @@ const fetchPriceEastMoney = async (stockCode, exchange, startDate, endDate) => {
   const responseJson = await response.json()
   return responseJson;
 };
+
+class Lock {
+  constructor() {
+    this._locked = false;
+    this._queue = [];
+  }
+
+  async acquire() {
+    if (this._locked) {
+      await new Promise(resolve => this._queue.push(resolve));
+    }
+    this._locked = true;
+  }
+
+  release() {
+    this._locked = false;
+    if (this._queue.length > 0) {
+      const next = this._queue.shift();
+      next();
+    }
+  }
+}
+
+const lock = new Lock();
+
+const fetchPriceEastMoneyCritical = async (stockCode, exchange, startDate, endDate) => {
+  await lock.acquire();
+  try {
+    console.log('entered', stockCode, exchange, startDate, endDate);
+    const result = await fetchPriceEastMoney(stockCode, exchange, startDate, endDate);
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    await sleep(1000);
+    console.log('leaving', stockCode, exchange, startDate, endDate);
+    return result;
+  } finally {
+    lock.release();
+  }
+};
+
 
   const fetchSinaFinance = async (stockCode, startDate, endDate) => {
     'https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=sh510300&scale=240&ma=5&datalen=2';
