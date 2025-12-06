@@ -225,3 +225,14 @@ config.json
   ]
 }
 ```
+### update service on AWS
+```
+ps -aux | grep v2
+
+sudo vi /usr/local/etc/v2ray/config.json
+
+sudo systemctl stop v2ray
+sudo systemctl start v2ray
+
+ps -aux | grep v2
+```
