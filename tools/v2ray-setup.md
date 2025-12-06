@@ -53,7 +53,6 @@ config.json
       "protocol": "freedom",
       "settings": {
         "domainStrategy": "AsIs"
-        # "domainStrategy": "UseIPv4"
       }
     }
   ]
