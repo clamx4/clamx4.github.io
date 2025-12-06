@@ -10,9 +10,10 @@ https://github.com/v2fly/fhs-install-v2ray
 ```
 wget https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh
 
-# Debian, curl is used in the .sh
-apt update
-apt install curl
+# Debian 9/10, curl is used in the .sh
+# apt update
+# apt install curl
+# if Debian 13, curl is already installed
 bash install-release.sh
 
 systemctl enable v2ray
