@@ -34,6 +34,7 @@ async function fetchAndPrintResult() {
   const resultJson = await result.json();
   const uncoveredLines = [];
   const unconveredLinesConditional = [];
+  const duplicatedLines = [];
   for (let lineObject of resultJson.sources) {
     if (lineObject.isNew !== true) {
       continue;
@@ -45,6 +46,9 @@ async function fetchAndPrintResult() {
       lineObject.coveredConditions < lineObject.conditions) {
       unconveredLinesConditional.push(lineObject);
     }
+    if (lineObject.duplicated === true) {
+      duplicatedLines.push(lineObject);
+    }
   }
   
   console.log('uncoveredLines, count:', uncoveredLines.length);
@@ -55,6 +59,17 @@ async function fetchAndPrintResult() {
   console.log('conditional uncoveredLines, count:', unconveredLinesConditional.length);
   for (const x of unconveredLinesConditional) {
     console.log(`line: ${x.line}, covered/Conditions: ${x.coveredConditions}/${x.conditions}`);
+  }
+
+  console.info('duplicatedLines, count:', duplicatedLines.length);
+  let currentBlock = 0;
+  let lastDuplicatedLine = -1;
+  for (const x of duplicatedLines) {
+    if (x.line !== lastDuplicatedLine + 1) {
+      currentBlock++;
+    }
+    lastDuplicatedLine = x.line
+    console.info(`block: ${currentBlock}, line: ${x.line}`);
   }
 }
 await fetchAndPrintResult();
