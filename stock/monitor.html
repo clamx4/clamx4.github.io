@@ -430,7 +430,7 @@ const fetchPriceEastMoneyCritical = async (stockCode, exchange, startDate, endDa
     function sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
-    await sleep(1500);
+    await sleep(1000 + parseInt(Math.random()*2000));
     console.log('leaving', stockCode, exchange, startDate, endDate);
     return result;
   } finally {
