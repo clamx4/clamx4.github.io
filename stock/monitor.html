@@ -364,20 +364,31 @@ const rebalance = [
 const codeToPricePromise = {};
 
 const fetchPrice = async (stockCode, exchange, startDate, endDate) => {
-  if (codeToPricePromise[stockCode] === undefined) {
-    // codeToPricePromise[stockCode] = fetchPriceEastMoney(stockCode, exchange, startDate, endDate);
-    codeToPricePromise[stockCode] = fetchPriceEastMoneyCritical(stockCode, exchange, startDate, endDate);
-  }
-  const pricePromise = codeToPricePromise[stockCode];
-  const responseEastMoney = await pricePromise;
+  // if (codeToPricePromise[stockCode] === undefined) {
+  //   // codeToPricePromise[stockCode] = fetchPriceEastMoney(stockCode, exchange, startDate, endDate);
+  //   codeToPricePromise[stockCode] = fetchPriceEastMoneyCritical(stockCode, exchange, startDate, endDate);
+  // }
+  // const pricePromise = codeToPricePromise[stockCode];
+  // try {
+  //   const responseEastMoney = await pricePromise;
+  //   const lastDayPricesString = responseEastMoney.data.klines.at(-1);
+  //   const [dateString, open, closeString, max, min] = lastDayPricesString.split(',');
+  //   return {
+  //     name: responseEastMoney.data.name,
+  //     decimal: responseEastMoney.data.decimal,
+  //     dateString,
+  //     close: parseFloat(closeString),
+  //   }
+  // } catch(e) {
+  //   console.error('error fetch price from eastmoney', e);
+  // }
 
-  const lastDayPricesString = responseEastMoney.data.klines.at(-1);
-  const [dateString, open, closeString, max, min] = lastDayPricesString.split(',');
-  return {
-    name: responseEastMoney.data.name,
-    decimal: responseEastMoney.data.decimal,
-    dateString,
-    close: parseFloat(closeString),
+  codeToPricePromise[stockCode] = SinaApi.fetchPrice(exchange, stockCode);
+  try {
+    const responseSina = await codeToPricePromise[stockCode];
+    return responseSina;
+  } catch(e) {
+    console.error('error fetch price from sina', e);
   }
 };
 
@@ -446,6 +457,113 @@ const fetchPriceEastMoneyCritical = async (stockCode, exchange, startDate, endDa
   const fetchSinaFuture = async (code, startDate, endDate) => {
     'https://stock2.finance.sina.com.cn/futures/api/json.php/CffexFuturesService.getCffexFuturesDailyKLine?symbol=IC2406';
   };
+class SinaApi {
+  static toSymbol(exchange, code) {
+    switch(exchange) {
+      case Exchange.SH:
+        return 'sh' + code;
+      case Exchange.SZ:
+        return 'sz' + code;
+      case Exchange.CFFEX:
+      case Exchange.CZCE:
+        return 'nf_' + code;
+      case Exchange.SHFE:
+      case Exchange.DCE:
+      case Exchange.GFEX:
+        return 'nf_' + code.toUpperCase();  
+      case Exchange.NYSE:
+      case Exchange.NASDAQ:
+        return 'gb_' + code.toLowerCase();
+      default:
+        throw new Error('wrong exchange: ' + exchange);
+    }
+  }
+
+  static async fetchPrice(exchange, code) {
+    const symbol = this.toSymbol(exchange, code);
+    const url = `https://hq.sinajs.cn/?list=${symbol}`;
+    const response = await fetch(url, {
+      // headers: { referer: 'https://vip.stock.finance.sina.com.cn/' }
+    });
+    // const text = await response.text();
+    let encoding = 'utf-8';
+    const contentType = response.headers.get('content-type');
+    if (contentType) {
+      const match = contentType.match(/charset=([^;]+)/i);
+      if (match?.[1]) encoding = match[1];
+    }
+    console.debug(contentType, encoding);
+
+    const text = new TextDecoder(encoding).decode(await response.arrayBuffer());
+    console.log('text', text)
+    return this.parsePriceString(text, exchange, code);
+  }
+
+  static parsePriceString(priceString, exchange, code) {
+    const regex = /"(.*)";/;
+    const csv = priceString.match(regex)[1];
+    console.debug('csv', csv)
+
+    const array = csv.split(',');
+    
+    const dateString = array.find(s => s.match(/^\d\d\d\d-\d\d-\d\d$/));
+    if (dateString === undefined) {
+      console.warn('dateString not found', dateString, priceString);
+    }
+
+    switch(exchange) {
+      case Exchange.SH:
+      case Exchange.SZ:
+        return {
+          name: array[0],
+          dateString,
+          open: parseFloat(array[1]),
+          close: parseFloat(array[3]),
+          high: parseFloat(array[4]),
+          low: parseFloat(array[5]),
+          preClose: parseFloat(array[2]),
+        };
+      case Exchange.CFFEX:
+        return {
+          name: code,
+          dateString,
+          open: parseFloat(array[0]),
+          close: parseFloat(array[3]),
+          high: parseFloat(array[1]),
+          low: parseFloat(array[2]),
+          preClose: parseFloat(array[13]),
+          preSettlement: parseFloat(array[14]),
+        };
+      case Exchange.SHFE:
+      case Exchange.CZCE:
+      case Exchange.DCE:
+      case Exchange.GFEX:
+        return {
+          name: code, // array[0]
+          dateString,
+          open: parseFloat(array[2]),
+          close: parseFloat(array[8]),
+          high: parseFloat(array[3]),
+          low: parseFloat(array[4]),
+          preClose: null,
+          preSettlement: parseFloat(array[10]),
+        };
+      case Exchange.NYSE:
+      case Exchange.NASDAQ:
+        return {
+          name: array[0],
+          dateString,
+          open: parseFloat(array[5]),
+          close: parseFloat(array[1]),
+          high: parseFloat(array[6]),
+          low: parseFloat(array[7]),
+          preClose: parseFloat(array[26]),
+        };
+      default:
+        throw new Error('wrong:', exchange, code);
+    }
+  }
+}
 </script>
 
 <script type="text/babel">
