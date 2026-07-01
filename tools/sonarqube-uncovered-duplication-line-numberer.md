@@ -14,6 +14,7 @@ However, sonarqube does not show the exact line numbers of uncovered code. see:
   - sonarqube page, e.g. `https://sonar.example.com/component_measures?id=org%3Arepo&pullRequest=123&metric=new_coverage&view=list`
   - detail page, e.g. `https://sonar.example.com/component_measures?id=...&metric=new_uncovered_lines&pullRequest=123&view=list&selected=org%3Arepo%3Apath%2Fto%2Ffile.js`
 2. open devtools, copy following and execute
+
 ```javascript
 async function fetchAndPrintResult() {
   const host = window.location.host;
